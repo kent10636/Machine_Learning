@@ -5,6 +5,12 @@ data_train = pd.read_csv("E:/PycharmProjects/Machine_Learning/Kaggle Titanic/Dat
 data_test = pd.read_csv("E:/PycharmProjects/Machine_Learning/Kaggle Titanic/Data/test.csv")
 
 ##################################################
+# 查看并分析原训练集
+# print(data_train)  # 打印整个训练集
+# data_train.info()  # 打印dataframe简易信息（不同属性的行数，是否缺失，数据类型等）
+# print(data_train.describe())  # 打印dataframe具体数值信息（不同属性的行数，均值等）
+
+##################################################
 # 用scikit-learn中的RandomForest来拟合缺失的年龄数据
 from sklearn.ensemble import RandomForestRegressor
 
@@ -77,30 +83,6 @@ df.to_csv("E:/PycharmProjects/Machine_Learning/Kaggle Titanic/Processed_Data/pro
 # train_data预处理完成
 
 ##################################################
-# 把需要的feature字段取出来，转成numpy格式，使用scikit-learn的LogisticRegression建模
-from sklearn import linear_model
-
-# 用正则表达式取出需要的属性值
-train_df = df.filter(regex='Survived|Age_.*|SibSp|Parch|Fare_.*|Cabin_.*|Embarked_.*|Sex_.*|Pclass_.*')
-train_np = train_df.as_matrix()
-
-# y即Survival结果
-y = train_np[:, 0]
-
-# X即特征属性值
-X = train_np[:, 1:]
-
-# fit到RandomForestRegressor中
-clf = linear_model.LogisticRegression(C=1.0, penalty='l1', tol=1e-6)
-clf.fit(X, y)
-
-# print(clf)
-import pickle
-
-with open('E:/PycharmProjects/Machine_Learning/Kaggle Titanic/Model/train_model.pkl', 'wb')as file:
-    pickle.dump(clf, file)
-
-##################################################
 # 也要对test_data做同样的数据预处理
 
 data_test.loc[(data_test.Fare.isnull()), 'Fare'] = 0
@@ -132,13 +114,3 @@ df_test['Fare_scaled'] = scaler.fit_transform(df_test['Fare'].values.reshape(-1,
 # print(df_test)
 df_test.to_csv("E:/PycharmProjects/Machine_Learning/Kaggle Titanic/Processed_Data/processed_test_data.csv", index=False)
 # test_data预处理完成
-
-##################################################
-import numpy as np
-
-'''
-test = df_test.filter(regex='Age_.*|SibSp|Parch|Fare_.*|Cabin_.*|Embarked_.*|Sex_.*|Pclass_.*')
-predictions = clf.predict(test)
-result = pd.DataFrame({'PassengerId': data_test['PassengerId'].as_matrix(), 'Survived': predictions.astype(np.int32)})
-result.to_csv("E:/PycharmProjects/Machine_Learning/Kaggle Titanic/logistic_regression_predictions.csv", index=False)
-'''
